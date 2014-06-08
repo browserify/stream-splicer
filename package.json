@@ -1,0 +1,37 @@
+{
+  "name": "mutable-pipeline",
+  "version": "1.0.0",
+  "description": "streaming pipeline with a mutable configuration",
+  "main": "index.js",
+  "dependencies": {
+    "inherits": "^2.0.1",
+    "isarray": "~0.0.1",
+    "readable-stream": "^1.1.13-1",
+    "through2": "^1.0.0"
+  },
+  "devDependencies": {
+    "tape": "^2.12.1",
+    "JSONStream": "~0.8.2",
+    "concat-stream": "^1.4.6",
+    "split": "~0.3.0"
+  },
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/substack/mutable-pipeline.git"
+  },
+  "homepage": "https://github.com/substack/mutable-pipeline",
+  "keywords": [
+    "stream",
+    "mutable",
+    "pipeline"
+  ],
+  "author": {
+    "name": "James Halliday",
+    "email": "mail@substack.net",
+    "url": "http://substack.net"
+  },
+  "license": "MIT"
+}
