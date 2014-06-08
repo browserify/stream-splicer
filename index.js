@@ -72,6 +72,12 @@ Pipeline.prototype._write = function (buf, enc, next) {
 };
 
 Pipeline.prototype.push = function (stream) {
+    this._push(stream);
+    this.emit('_mutate');
+    return this._streams.length;
+};
+
+Pipeline.prototype._push = function (stream) {
     var self = this;
     stream.on('error', function (err) {
         err.stream = this;
@@ -90,9 +96,6 @@ Pipeline.prototype.push = function (stream) {
             Duplex.prototype.push.call(self, null);
         }
     });
-    this.emit('_mutate');
-    
-    return this;
 };
 
 Pipeline.prototype.pop = function () {
@@ -102,6 +105,49 @@ Pipeline.prototype.pop = function () {
     }
     this.emit('_mutate');
     return s;
+};
+
+Pipeline.prototype.splice = function (start, removeLen) {
+    var self = this;
+    var removed = this._streams.splice.apply(this._streams, arguments);
+    var n = start < 0 ? this._streams.length - start : start;
+    
+    if (this._streams[n] && removed.length > 0) {
+        this._streams[n].unpipe(removed[0]);
+    }
+    for (var i = 1; i < removed.length; i++) {
+        removed[i-1].unpipe(removed[i]);
+    }
+    var nextIndex = n + 1 - removeLen + arguments.length - 2;
+    if (removed[i-1] && this._streams[nextIndex]) {
+        removed[i-1].unpipe(this._streams[nextIndex]);
+    }
+    for (var i = 2; i < arguments.length; i++) (function (stream, i) {
+        var j = n + 1 - removeLen + i - 2;
+        stream.on('error', function (err) {
+            err.stream = this;
+            self.emit('error', err);
+        });
+        stream = self._streams[j] = self._wrapStream(stream);
+        
+        if (self._streams[j-1]) {
+            self._streams[j-1].pipe(stream);
+        }
+        
+        stream.once('end', function () {
+            var ix = self._streams.indexOf(stream);
+            if (ix === self._streams.length - 1) {
+                Duplex.prototype.push.call(self, null);
+            }
+        });
+    })(arguments[i], i);
+    
+    if (self._streams[nextIndex-1] && self._streams[nextIndex]) {
+        self._streams[nextIndex-1].pipe(self._streams[nextIndex]);
+    }
+    
+    this.emit('_mutate');
+    return removed;
 };
 
 Pipeline.prototype.indexOf = function (stream) {

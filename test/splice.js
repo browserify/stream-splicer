@@ -6,7 +6,7 @@ var test = require('tape');
 
 test('splice', function (t) {
     var expected = {};
-    expected.replacer = [ '333', '444', '5000' ];
+    expected.replacer = [ '333', '444', '5000', '6000' ];
     
     t.plan(Object.keys(expected).reduce(function (sum, key) {
         return sum + expected[key].length;
@@ -33,11 +33,10 @@ test('splice', function (t) {
     var replacer = through(function (buf, enc, next) {
         var ex = expected.replacer.shift();
         t.equal(buf.toString(), ex);
-        this.push(buf.toString('hex') + '\n');
-        
         if (expected.replacer.length === 2) {
             stream.splice(3, 1, thousander);
         }
+        this.push(buf.toString('hex') + '\n');
         next();
     });
     
