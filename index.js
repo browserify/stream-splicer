@@ -96,5 +96,6 @@ Pipeline.prototype._wrapStream = function (stream) {
         stream.write(buf);
         next();
     };
+    d.once('finish', function () { stream.end() });
     return d;
 }
