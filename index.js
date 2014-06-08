@@ -75,12 +75,7 @@ Pipeline.prototype.push = function (stream) {
 };
 
 Pipeline.prototype.pop = function () {
-    var s = this._streams.pop();
-    if (this._streams.length > 0) {
-        this._streams[this._streams.length-1].unpipe(s);
-    }
-    this.emit('_mutate');
-    return s;
+    return this.splice(this._streams.length-1,1)[0];
 };
 
 Pipeline.prototype.shift = function () {
@@ -129,7 +124,7 @@ Pipeline.prototype.splice = function (start, removeLen) {
     if (reps.length && self._streams[end]) {
         reps[reps.length-1].pipe(self._streams[end]);
     }
-    if (self._streams[start-1]) {
+    if (reps[0] && self._streams[start-1]) {
         self._streams[start-1].pipe(reps[0]);
     }
     
