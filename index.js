@@ -112,8 +112,8 @@ Pipeline.prototype.splice = function (start, removeLen) {
     var removed = this._streams.splice.apply(this._streams, arguments);
     var n = start < 0 ? this._streams.length - start : start;
     
-    if (this._streams[n] && removed.length > 0) {
-        this._streams[n].unpipe(removed[0]);
+    if (this._streams[n-1] && removed.length > 0) {
+        this._streams[n-1].unpipe(removed[0]);
     }
     for (var i = 1; i < removed.length; i++) {
         removed[i-1].unpipe(removed[i]);
