@@ -7,6 +7,8 @@ var test = require('tape');
 test('splice', function (t) {
     var expected = {};
     expected.replacer = [ '333', '444', '5000', '6000' ];
+    expected.d = [ 3, 4 ];
+    expected.thousander = [ 5, 6 ];
     
     t.plan(Object.keys(expected).reduce(function (sum, key) {
         return sum + expected[key].length;
@@ -22,10 +24,12 @@ test('splice', function (t) {
         next();
     });
     var d = through.obj(function (x, enc, next) {
+        t.equal(x, expected.d.shift(), 'd');
         this.push(String(x * 111));
         next();
     });
     var thousander = through.obj(function (x, enc, next) {
+        t.equal(x, expected.thousander.shift(), 'thousander');
         this.push(String(x * 1000));
         next();
     });
