@@ -90,7 +90,7 @@ Pipeline.prototype.push = function (stream) {
             Duplex.prototype.push.call(self, null);
         }
     });
-    this.emit('_mutate', stream);
+    this.emit('_mutate');
     
     return this;
 };
@@ -100,6 +100,7 @@ Pipeline.prototype.pop = function () {
     if (this._streams.length > 0) {
         this._streams[this._streams.length-1].unpipe(s);
     }
+    this.emit('_mutate');
     return s;
 };
 

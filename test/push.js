@@ -4,7 +4,7 @@ var split = require('split');
 var concat = require('concat-stream');
 var test = require('tape');
 
-test('push to different destinations', function (t) {
+test('push', function (t) {
     var expected = {};
     expected.first = [ 333, 444, 555, 666, 777 ];
     expected.second = [ 6.66, 7.77 ];

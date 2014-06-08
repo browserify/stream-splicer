@@ -37,7 +37,7 @@ test('pop', function (t) {
     
     var stream = pipeline([ a, b, c, d, replacer ]);
     stream.pipe(concat(function (body) {
-        t.deepEqual(body.toString(), '333333\n343434555666');
+        t.deepEqual(body.toString(), '333333\n343434\n555666');
     }));
     
     stream.write('{"x":3}\n');
