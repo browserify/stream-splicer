@@ -1,5 +1,5 @@
 {
-  "name": "splicer",
+  "name": "stream-splicer",
   "version": "1.0.0",
   "description": "streaming pipeline with a mutable configuration",
   "main": "index.js",

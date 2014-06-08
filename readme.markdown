@@ -1,4 +1,4 @@
-# splicer
+# stream-splicer
 
 streaming pipeline with a mutable configuration
 
