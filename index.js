@@ -72,30 +72,8 @@ Pipeline.prototype._write = function (buf, enc, next) {
 };
 
 Pipeline.prototype.push = function (stream) {
-    this._push(stream);
-    this.emit('_mutate');
+    this.splice(this._streams.length, 0, stream);
     return this._streams.length;
-};
-
-Pipeline.prototype._push = function (stream) {
-    var self = this;
-    stream.on('error', function (err) {
-        err.stream = this;
-        self.emit('error', err);
-    });
-    stream = this._wrapStream(stream);
-    
-    if (this._streams.length > 0) {
-        this._streams[this._streams.length-1].pipe(stream);
-    }
-    this._streams.push(stream);
-    
-    stream.once('end', function () {
-        var ix = self._streams.indexOf(stream);
-        if (ix === self._streams.length - 1) {
-            Duplex.prototype.push.call(self, null);
-        }
-    });
 };
 
 Pipeline.prototype.pop = function () {
@@ -109,42 +87,47 @@ Pipeline.prototype.pop = function () {
 
 Pipeline.prototype.splice = function (start, removeLen) {
     var self = this;
-    var removed = this._streams.splice.apply(this._streams, arguments);
-    var n = start < 0 ? this._streams.length - start : start;
+    var len = this._streams.length;
+    start = start < 0 ? len - start : start;
+    if (removeLen === undefined) removeLen = len - start;
+    removeLen = Math.max(0, Math.min(len - start, removeLen));
     
-    if (this._streams[n-1] && removed.length > 0) {
-        this._streams[n-1].unpipe(removed[0]);
+    for (var i = start; i < start + removeLen; i++) {
+        if (self._streams[i-1]) {
+            self._streams[i-1].unpipe(self._streams[i]);
+        }
     }
-    for (var i = 1; i < removed.length; i++) {
-        removed[i-1].unpipe(removed[i]);
+    if (self._streams[i-1] && self._streams[i]) {
+        self._streams[i-1].unpipe(self._streams[i]);
     }
-    var nextIndex = n + 1 - removeLen + arguments.length - 2;
-    if (removed[i-1] && this._streams[nextIndex]) {
-        removed[i-1].unpipe(this._streams[nextIndex]);
-    }
-    for (var i = 2; i < arguments.length; i++) (function (stream, i) {
-        var j = n + 1 - removeLen + i - 2;
+    var end = i;
+    
+    var reps = [], args = arguments;
+    for (var j = 2; j < args.length; j++) (function (stream) {
         stream.on('error', function (err) {
             err.stream = this;
             self.emit('error', err);
         });
-        stream = self._streams[j] = self._wrapStream(stream);
-        
-        if (self._streams[j-1]) {
-            self._streams[j-1].pipe(stream);
-        }
-        
+        stream = self._wrapStream(stream);
         stream.once('end', function () {
             var ix = self._streams.indexOf(stream);
-            if (ix === self._streams.length - 1) {
+            if (ix >= 0 && ix === self._streams.length - 1) {
                 Duplex.prototype.push.call(self, null);
             }
         });
-    })(arguments[i], i);
+        if (j < args.length - 1) stream.pipe(args[j+1]);
+        reps.push(stream);
+    })(arguments[j]);
     
-    if (self._streams[nextIndex-1] && self._streams[nextIndex]) {
-        self._streams[nextIndex-1].pipe(self._streams[nextIndex]);
+    if (reps.length && self._streams[end]) {
+        reps[reps.length-1].pipe(self._streams[end]);
     }
+    if (self._streams[start-1]) {
+        self._streams[start-1].pipe(reps[0]);
+    }
+    
+    var sargs = [start,removeLen].concat(reps);
+    var removed = self._streams.splice.apply(self._streams, sargs);
     
     this.emit('_mutate');
     return removed;
