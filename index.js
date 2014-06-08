@@ -2,17 +2,35 @@ var isarray = require('isarray');
 var Duplex = require('readable-stream').Duplex;
 var Pass = require('readable-stream').PassThrough;
 var inherits = require('inherits');
+var isArray = require('isarray');
 
 module.exports = Pipeline;
 inherits(Pipeline, Duplex);
 
+module.exports.obj = function (streams, opts) {
+    if (!opts && !isArray(streams)) {
+        opts = streams;
+        streams = [];
+    }
+    if (!streams) streams = [];
+    if (!opts) opts = {};
+    opts.objectMode = true;
+    return new Pipeline(streams, opts);
+};
+
 function Pipeline (streams, opts) {
     if (!(this instanceof Pipeline)) return new Pipeline(streams, opts);
+    if (!opts && !isArray(streams)) {
+        opts = streams;
+        streams = [];
+    }
+    if (!streams) streams = [];
     if (!opts) opts = {};
     Duplex.call(this, opts);
     
     var self = this;
     this._options = opts;
+    this._wrapOptions = { objectMode: opts.objectMode !== false };
     this._streams = [];
     
     for (var i = 0; i < streams.length; i++) {
@@ -91,7 +109,7 @@ Pipeline.prototype.indexOf = function (stream) {
 
 Pipeline.prototype._wrapStream = function (stream) {
     if (typeof stream.read === 'function') return stream;
-    var d = (new Duplex(this._options)).wrap(stream);
+    var d = (new Duplex(this._wrapOptions)).wrap(stream);
     d._write = function (buf, enc, next) {
         stream.write(buf);
         next();
