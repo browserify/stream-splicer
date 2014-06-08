@@ -59,7 +59,7 @@ Pipeline.prototype.push = function (stream) {
         err.stream = this;
         self.emit('error', err);
     });
-    stream = wrapStream(stream);
+    stream = this._wrapStream(stream);
     
     if (this._streams.length > 0) {
         this._streams[this._streams.length-1].pipe(stream);
@@ -89,9 +89,9 @@ Pipeline.prototype.indexOf = function (stream) {
     return this._streams.indexOf(stream);
 };
 
-function wrapStream (stream) {
+Pipeline.prototype._wrapStream = function (stream) {
     if (typeof stream.read === 'function') return stream;
-    var d = (new Duplex).wrap(stream);
+    var d = (new Duplex(this._options)).wrap(stream);
     d._write = function (buf, enc, next) {
         stream.write(buf);
         next();
