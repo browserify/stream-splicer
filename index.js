@@ -33,9 +33,7 @@ function Pipeline (streams, opts) {
     this._wrapOptions = { objectMode: opts.objectMode !== false };
     this._streams = [];
     
-    for (var i = 0; i < streams.length; i++) {
-        this.push(streams[i]);
-    }
+    this.splice.apply(this, [ 0, 0 ].concat(streams));
     
     this.once('finish', function () {
         self._streams[0].end();
