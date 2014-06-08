@@ -90,6 +90,11 @@ Pipeline.prototype.shift = function () {
     return s;
 };
 
+Pipeline.prototype.unshift = function () {
+    this.splice.apply(this, [0,0].concat([].slice.call(arguments)));
+    return this._streams.length;
+};
+
 Pipeline.prototype.splice = function (start, removeLen) {
     var self = this;
     var len = this._streams.length;
