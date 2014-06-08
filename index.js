@@ -84,10 +84,7 @@ Pipeline.prototype.pop = function () {
 };
 
 Pipeline.prototype.shift = function () {
-    var s = this._streams.shift();
-    if (this._streams.length > 0) s.unpipe(this._streams[0]);
-    this.emit('_mutate');
-    return s;
+    return this.splice(0,1)[0];
 };
 
 Pipeline.prototype.unshift = function () {
