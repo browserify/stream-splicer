@@ -83,6 +83,13 @@ Pipeline.prototype.pop = function () {
     return s;
 };
 
+Pipeline.prototype.shift = function () {
+    var s = this._streams.shift();
+    if (this._streams.length > 0) s.unpipe(this._streams[0]);
+    this.emit('_mutate');
+    return s;
+};
+
 Pipeline.prototype.splice = function (start, removeLen) {
     var self = this;
     var len = this._streams.length;
