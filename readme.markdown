@@ -60,3 +60,52 @@ $ echo -ne 'GET / HTTP/1.1\nHost: substack.net\nUser-Agent: echo\n\n{"rows":["be
 ]
 ```
 
+# methods
+
+``` js
+var splicer = require('stream-splicer')
+```
+
+## var pipeline = splicer(streams, opts)
+
+Create a `pipeline` duplex stream given an array of `streams`. Each `stream`
+will be piped to the next. Writes to `pipeline` get written to the first stream
+and data for reads from `pipeline` come from the last stream.
+
+For example, for streams `[ a, b, c, d ]`, this pipeline is constructed
+internally:
+
+```
+a.pipe(b).pipe(c).pipe(d)
+```
+
+Input will get written into `a`. Output will be read from `d`.
+
+## var pipeline = splicer.obj(streams, opts)
+
+Create a `pipeline` with `opts.objectMode` set to true for convenience.
+
+## var removed = pipeline.splice(index, howMany, stream, ...)
+
+Splice the pipeline starting at `index`, removing `howMany` streams and
+replacing them with each additional `stream` argument provided.
+
+The streams that were removed from the splice and returned.
+
+## pipeline.push(stream, ...)
+
+Push one or more streams to the end of the pipeline.
+
+## var stream = pipeline.pop()
+
+Pop a stream from the end of the pipeline.
+
+## pipeline.unshift(stream, ...)
+
+Unshift one or more streams to the begining of the pipeline.
+
+## var stream = pipeline.shift()
+
+Shift a stream from the begining of the pipeline.
+
+
