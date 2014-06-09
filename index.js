@@ -1,4 +1,3 @@
-var isarray = require('isarray');
 var Duplex = require('readable-stream').Duplex;
 var Readable = require('readable-stream').Readable;
 var Pass = require('readable-stream').PassThrough;
