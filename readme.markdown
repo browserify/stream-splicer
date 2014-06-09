@@ -8,6 +8,55 @@ but with a pipeline configuration that can be changed at runtime.
 
 # example
 
+This example begins with an HTTP header parser that waits for an empty line to
+signify the end of the header. At that point, it switches to a streaming json
+parser to operate on the HTTP body.
+
 ``` js
+var splicer = require('stream-splicer');
+var through = require('through2');
+var JSONStream = require('JSONStream');
+var split = require('split');
+
+var headerData = {};
+var headers = through.obj(function (buf, enc, next) {
+    var line = buf.toString('utf8');
+    if (line === '') {
+        this.push(headerData);
+        pipeline.splice(1, 1, JSONStream.parse([ 'rows', true ]));
+    }
+    else {
+        var m = /^(\S+):(.+)/.exec(line);
+        var key = m && m[1].trim();
+        var value = m && m[2].trim();
+        if (m) headerData[key] = value;
+    }
+    next();
+});
+var pipeline = splicer([ split(), headers, JSONStream.stringify() ]);
+process.stdin.pipe(pipeline).pipe(process.stdout);
+```
+
+intput:
+
+```
+GET / HTTP/1.1
+Host: substack.net
+User-Agent: echo
+
+{"rows":["beep","boop"]}
+```
+
+output:
+
+```
+$ echo -ne 'GET / HTTP/1.1\nHost: substack.net\nUser-Agent: echo\n\n{"rows":["beep","boop"]}\n' | node example/header.js
+[
+{"Host":"substack.net","User-Agent":"echo"}
+,
+"beep"
+,
+"boop"
+]
 ```
 

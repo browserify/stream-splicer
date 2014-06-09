@@ -1,4 +1,4 @@
-var pipeline = require('../');
+var splicer = require('../');
 var through = require('through2');
 var JSONStream = require('JSONStream');
 var split = require('split');
@@ -8,7 +8,7 @@ var headers = through.obj(function (buf, enc, next) {
     var line = buf.toString('utf8');
     if (line === '') {
         this.push(headerData);
-        outer.splice(1, 1, JSONStream.parse([ 'rows', true ]));
+        pipeline.splice(1, 1, JSONStream.parse([ 'rows', true ]));
     }
     else {
         var m = /^(\S+):(.+)/.exec(line);
@@ -18,5 +18,5 @@ var headers = through.obj(function (buf, enc, next) {
     }
     next();
 });
-var outer = pipeline([ split(), headers, JSONStream.stringify() ]);
-process.stdin.pipe(outer).pipe(process.stdout);
+var pipeline = splicer([ split(), headers, JSONStream.stringify() ]);
+process.stdin.pipe(pipeline).pipe(process.stdout);
