@@ -108,4 +108,14 @@ Unshift one or more streams to the begining of the pipeline.
 
 Shift a stream from the begining of the pipeline.
 
+# install
 
+With [npm](https://npmjs.org) do:
+
+```
+npm install stream-splicer
+```
+
+# license
+
+MIT
