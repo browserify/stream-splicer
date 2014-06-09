@@ -1,8 +1,14 @@
 var isarray = require('isarray');
 var Duplex = require('readable-stream').Duplex;
+var Readable = require('readable-stream').Readable;
 var Pass = require('readable-stream').PassThrough;
 var inherits = require('inherits');
 var isArray = require('isarray');
+var wrap = require('readable-wrap');
+
+var nextTick = typeof setImmediate !== 'undefined'
+    ? setImmediate : process.nextTick
+;
 
 module.exports = Pipeline;
 inherits(Pipeline, Duplex);
@@ -141,11 +147,12 @@ Pipeline.prototype.indexOf = function (stream) {
 
 Pipeline.prototype._wrapStream = function (stream) {
     if (typeof stream.read === 'function') return stream;
-    var d = (new Duplex(this._wrapOptions)).wrap(stream);
-    d._write = function (buf, enc, next) {
-        stream.write(buf);
-        next();
+    var w = wrap(stream, this._wrapOptions);
+    w._write = function (buf, enc, next) {
+        if (stream.write(buf) === false) {
+            stream.once('drain', next);
+        }
+        else nextTick(next);
     };
-    d.once('finish', function () { stream.end() });
-    return d;
-}
+    return w;
+};
