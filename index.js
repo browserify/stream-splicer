@@ -48,9 +48,8 @@ function Pipeline (streams, opts) {
 
 Pipeline.prototype._read = function () {
     var self = this;
-    if (this._streams.length === 0) {
-        this._streams.push(new Pass(this._options));
-    }
+    this._notEmpty();
+    
     var r = this._streams[this._streams.length-1];
     var buf, reads = 0;
     while ((buf = r.read()) !== null) {
@@ -69,10 +68,21 @@ Pipeline.prototype._read = function () {
 };
 
 Pipeline.prototype._write = function (buf, enc, next) {
-    if (this._streams.length === 0) {
-        this._streams.push(new Pass(this._options));
-    }
+    this._notEmpty();
     this._streams[0]._write(buf, enc, next);
+};
+
+Pipeline.prototype._notEmpty = function () {
+    var self = this;
+    if (this._streams.length > 0) return;
+    var stream = new Pass(this._options);
+    stream.once('end', function () {
+        var ix = self._streams.indexOf(stream);
+        if (ix >= 0 && ix === self._streams.length - 1) {
+            Duplex.prototype.push.call(self, null);
+        }
+    });
+    this._streams.push(stream);
 };
 
 Pipeline.prototype.push = function (stream) {
