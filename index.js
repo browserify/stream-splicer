@@ -86,7 +86,8 @@ Pipeline.prototype._notEmpty = function () {
 };
 
 Pipeline.prototype.push = function (stream) {
-    this.splice(this._streams.length, 0, stream);
+    var args = [ this._streams.length, 0 ].concat([].slice.call(arguments));
+    this.splice.apply(this, args);
     return this._streams.length;
 };
 
