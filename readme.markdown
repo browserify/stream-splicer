@@ -85,6 +85,10 @@ a.pipe(b).pipe(c).pipe(d)
 
 Input will get written into `a`. Output will be read from `d`.
 
+If any of the elements in `streams` are arrays, they will be converted into
+nested pipelines. This is useful if you want to expose a hookable pipeline with
+grouped insertion points.
+
 ## var pipeline = splicer.obj(streams, opts)
 
 Create a `pipeline` with `opts.objectMode` set to true for convenience.
@@ -111,6 +115,10 @@ Unshift one or more streams to the begining of the pipeline.
 ## var stream = pipeline.shift()
 
 Shift a stream from the begining of the pipeline.
+
+## var stream = pipeline.get(index)
+
+Return the stream at index `index`.
 
 # install
 
