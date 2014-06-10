@@ -11,9 +11,7 @@ test('unshift', function (t) {
     expected.c = [ 13, 14, 510, 610 ];
     expected.output = [ 13/2, 7, 255, 305 ];
     
-    t.plan(Object.keys(expected).reduce(function (sum, key) {
-        return sum + expected[key].length;
-    }, 0));
+    t.plan(2 + 4 + 4 + 4);
     
     var a = through.obj(function (x, enc, next) {
         var ex = expected.a.shift();

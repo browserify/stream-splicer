@@ -10,9 +10,7 @@ test('splice', function (t) {
     expected.d = [ 3, 4 ];
     expected.thousander = [ 5, 6 ];
     
-    t.plan(Object.keys(expected).reduce(function (sum, key) {
-        return sum + expected[key].length;
-    }, 0) + 1);
+    t.plan(4 + 2 + 2 + 1);
     
     var a = split();
     var b = through.obj(function (row, enc, next) {

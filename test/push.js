@@ -10,9 +10,7 @@ test('push', function (t) {
     expected.second = [ 6.66, 7.77 ];
     expected.output = [ 3.33, 4.44, 5.55, 3, 2 ];
     
-    t.plan(Object.keys(expected).reduce(function (sum, key) {
-        return sum + expected[key].length;
-    }, 0));
+    t.plan(5 + 2 + 5);
     
     var a = split();
     var b = through.obj(function (row, enc, next) {

@@ -8,9 +8,7 @@ test('pop', function (t) {
     var expected = {};
     expected.replacer = [ '333', '444' ];
     
-    t.plan(Object.keys(expected).reduce(function (sum, key) {
-        return sum + expected[key].length;
-    }, 0) + 1);
+    t.plan(3);
     
     var a = split();
     var b = through.obj(function (row, enc, next) {

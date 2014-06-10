@@ -3,6 +3,7 @@ var Readable = require('readable-stream').Readable;
 var Pass = require('readable-stream').PassThrough;
 var inherits = require('inherits');
 var isArray = require('isarray');
+var indexof = require('indexof');
 var wrap = require('readable-wrap');
 
 var nextTick = typeof setImmediate !== 'undefined'
@@ -76,7 +77,7 @@ Pipeline.prototype._notEmpty = function () {
     if (this._streams.length > 0) return;
     var stream = new Pass(this._options);
     stream.once('end', function () {
-        var ix = self._streams.indexOf(stream);
+        var ix = indexof(self._streams, stream);
         if (ix >= 0 && ix === self._streams.length - 1) {
             Duplex.prototype.push.call(self, null);
         }
@@ -128,7 +129,7 @@ Pipeline.prototype.splice = function (start, removeLen) {
         });
         stream = self._wrapStream(stream);
         stream.once('end', function () {
-            var ix = self._streams.indexOf(stream);
+            var ix = indexof(self._streams, stream);
             if (ix >= 0 && ix === self._streams.length - 1) {
                 Duplex.prototype.push.call(self, null);
             }
@@ -152,7 +153,7 @@ Pipeline.prototype.splice = function (start, removeLen) {
 };
 
 Pipeline.prototype.indexOf = function (stream) {
-    return this._streams.indexOf(stream);
+    return indexof(this._streams, stream);
 };
 
 Pipeline.prototype._wrapStream = function (stream) {
