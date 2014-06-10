@@ -123,6 +123,9 @@ Pipeline.prototype.splice = function (start, removeLen) {
     
     var reps = [], args = arguments;
     for (var j = 2; j < args.length; j++) (function (stream) {
+        if (isArray(stream)) {
+            stream = new Pipeline(stream, self._options);
+        }
         stream.on('error', function (err) {
             err.stream = this;
             self.emit('error', err);
