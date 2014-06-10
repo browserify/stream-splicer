@@ -32,6 +32,6 @@ test('nested splicer', function (t) {
     
     stream.write('a\n');
     stream.write('b\n');
-    stream.write('c\n');
+    stream.write('c');
     stream.end();
 });
