@@ -23,9 +23,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/substack/mutable-pipeline.git"
+    "url": "git://github.com/substack/stream-splicer.git"
   },
-  "homepage": "https://github.com/substack/mutable-pipeline",
+  "homepage": "https://github.com/substack/stream-splicer",
   "keywords": [
     "stream",
     "mutable",
