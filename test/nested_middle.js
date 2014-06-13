@@ -14,8 +14,10 @@ test('nested splicer', function (t) {
     });
     
     var stream = pipeline.obj([
-        through(function (buf, enc, next) {
-            this.push(String.fromCharCode(buf.charAt(0) + 5));
+        through.obj(function (str, enc, next) {
+            this.push(str.replace(/^./, function (c) {
+                return String.fromCharCode(c.charCodeAt(0) + 5);
+            }));
             next();
         }),
         [ split(), addNewLines ],
@@ -25,7 +27,7 @@ test('nested splicer', function (t) {
         })
     ]);
     
-    stream.get(0).unshift(through(function (buf, enc, next) {
+    stream.get(1).unshift(through(function (buf, enc, next) {
         this.push(buf.toString('utf8').toUpperCase());
         next();
     }));
