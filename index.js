@@ -137,9 +137,12 @@ Pipeline.prototype.splice = function (start, removeLen) {
                 Duplex.prototype.push.call(self, null);
             }
         });
-        if (j < args.length - 1) stream.pipe(args[j+1]);
         reps.push(stream);
     })(arguments[j]);
+    
+    for (var i = 0; i < reps.length - 1; i++) {
+        reps[i].pipe(reps[i+1]);
+    }
     
     if (reps.length && self._streams[end]) {
         reps[reps.length-1].pipe(self._streams[end]);
