@@ -159,7 +159,10 @@ Pipeline.prototype.splice = function (start, removeLen) {
 };
 
 Pipeline.prototype.get = function (index) {
-    return this._streams[index];
+    if (index < 0) {
+        return this._streams[this._streams.length + index];
+    }
+    else return this._streams[index];
 };
 
 Pipeline.prototype.indexOf = function (stream) {
