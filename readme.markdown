@@ -116,9 +116,11 @@ Unshift one or more streams to the begining of the pipeline.
 
 Shift a stream from the begining of the pipeline.
 
-## var stream = pipeline.get(index)
+## var stream = pipeline.get(index, ...)
 
-Return the stream at index `index`.
+Return the stream at index `index, ...`. Indexes can be negative.
+
+Multiple indexes will traverse into nested pipelines.
 
 # install
 
