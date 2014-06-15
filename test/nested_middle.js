@@ -5,7 +5,7 @@ var split = require('split');
 var concat = require('concat-stream');
 var test = require('tape');
 
-test('nested splicer', function (t) {
+test('nested middle splicer', function (t) {
     t.plan(1);
     
     var addNewLines = through(function (buf, enc, next) {

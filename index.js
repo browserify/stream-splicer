@@ -161,17 +161,16 @@ Pipeline.prototype.splice = function (start, removeLen) {
 Pipeline.prototype.get = function () {
     if (arguments.length === 0) return undefined;
     
-    var base = this._streams;
+    var base = this;
     for (var i = 0; i < arguments.length; i++) {
         var index = arguments[i];
         if (index < 0) {
-            base = base[base.length + index];
+            base = base._streams[base._streams.length + index];
         }
         else {
-            base = base[index];
+            base = base._streams[index];
         }
         if (!base) return undefined;
-        if (base._streams) base = base._streams;
     }
     return base;
 };
