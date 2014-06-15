@@ -158,11 +158,22 @@ Pipeline.prototype.splice = function (start, removeLen) {
     return removed;
 };
 
-Pipeline.prototype.get = function (index) {
-    if (index < 0) {
-        return this._streams[this._streams.length + index];
+Pipeline.prototype.get = function () {
+    if (arguments.length === 0) return undefined;
+    
+    var base = this._streams;
+    for (var i = 0; i < arguments.length; i++) {
+        var index = arguments[i];
+        if (index < 0) {
+            base = base[base.length + index];
+        }
+        else {
+            base = base[index];
+        }
+        if (!base) return undefined;
+        if (base._streams) base = base._streams;
     }
-    else return this._streams[index];
+    return base;
 };
 
 Pipeline.prototype.indexOf = function (stream) {
