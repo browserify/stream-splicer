@@ -122,6 +122,12 @@ Return the stream at index `index, ...`. Indexes can be negative.
 
 Multiple indexes will traverse into nested pipelines.
 
+# attributes
+
+## pipeline.length
+
+The number of streams in the pipeline
+
 # install
 
 With [npm](https://npmjs.org) do:
