@@ -10,7 +10,7 @@ test('push', function (t) {
     expected.second = [ 6.66, 7.77 ];
     expected.output = [ 3.33, 4.44, 5.55, 3, 2 ];
     
-    t.plan(5 + 2 + 5);
+    t.plan(5 + 2 + 5 + 3);
     
     var a = split();
     var b = through.obj(function (row, enc, next) {
@@ -21,7 +21,11 @@ test('push', function (t) {
     var d = through.obj(function (x, enc, next) { this.push(x * 111); next() });
     
     var first = through.obj(function (row, enc, next) {
-        if (expected.first.length === 2) p.push(second);
+        if (expected.first.length === 2) {
+            t.equal(p.length, 5);
+            p.push(second);
+            t.equal(p.length, 6);
+        }
         
         var ex = expected.first.shift();
         t.deepEqual(row, ex);
@@ -37,6 +41,8 @@ test('push', function (t) {
     });
     
     var p = pipeline.obj([ a, b, c, d, first ]);
+    t.equal(p.length, 5);
+    
     p.pipe(through.obj(function (row, enc, next) {
         var ex = expected.output.shift();
         t.deepEqual(row, ex);

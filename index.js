@@ -155,6 +155,7 @@ Pipeline.prototype.splice = function (start, removeLen) {
     var removed = self._streams.splice.apply(self._streams, sargs);
     
     this.emit('_mutate');
+    this.length = this._streams.length;
     return removed;
 };
 
