@@ -1,5 +1,4 @@
 var Duplex = require('readable-stream').Duplex;
-var Readable = require('readable-stream').Readable;
 var Pass = require('readable-stream').PassThrough;
 var inherits = require('inherits');
 var isArray = require('isarray');
