@@ -107,21 +107,6 @@ Pipeline.prototype.unshift = function () {
 
 Pipeline.prototype.splice = function (start, removeLen) {
     var self = this;
-    var len = this._streams.length;
-    start = start < 0 ? len - start : start;
-    if (removeLen === undefined) removeLen = len - start;
-    removeLen = Math.max(0, Math.min(len - start, removeLen));
-    
-    for (var i = start; i < start + removeLen; i++) {
-        if (self._streams[i-1]) {
-            self._streams[i-1].unpipe(self._streams[i]);
-        }
-    }
-    if (self._streams[i-1] && self._streams[i]) {
-        self._streams[i-1].unpipe(self._streams[i]);
-    }
-    var end = i;
-    
     var reps = [], args = arguments;
     for (var j = 2; j < args.length; j++) (function (stream) {
         if (isArray(stream)) {
@@ -140,21 +125,50 @@ Pipeline.prototype.splice = function (start, removeLen) {
         });
         reps.push(stream);
     })(arguments[j]);
-    
-    for (var i = 0; i < reps.length - 1; i++) {
-        reps[i].pipe(reps[i+1]);
-    }
-    
-    if (reps.length && self._streams[end]) {
-        reps[reps.length-1].pipe(self._streams[end]);
-    }
-    if (reps[0] && self._streams[start-1]) {
-        self._streams[start-1].pipe(reps[0]);
-    }
-    
-    var sargs = [start,removeLen].concat(reps);
+
+    var flag = {};
+    var sargs = [start, removeLen, flag].concat(reps);
     var removed = self._streams.splice.apply(self._streams, sargs);
-    
+    start = indexof(self._streams, flag);
+    self._streams.splice(start, 1);
+
+    var end = start + reps.length;
+
+    removeLen = removed.length;
+    if (removeLen) {
+        for (var i = 1; i < removeLen; i++) {
+            removed[i - 1].unpipe(removed[i]);
+        }
+        if (self._streams[start - 1]) {
+            self._streams[start - 1].unpipe(removed[0]);
+        }
+        if (self._streams[end]) {
+            removed[removeLen - 1].unpipe(self._streams[end]);
+        }
+    }
+
+    if (end > start) {
+        if (!removeLen && self._streams[start - 1] && self._streams[end]) {
+            self._streams[start - 1].unpipe(self._streams[end]);
+        }
+        for (var i = 1; i < end - start; i++) {
+            reps[i - 1].pipe(reps[i]);
+        }
+        if (self._streams[start - 1]) {
+            self._streams[start - 1].pipe(reps[0]);
+        }
+        if (self._streams[end]) {
+            reps[end - start - 1].pipe(self._streams[end]);
+        }
+    }
+
+    if (removeLen && end === start) {
+        // pipeline may be broken, fix it
+        if (self._streams[start - 1] && self._streams[end]) {
+            self._streams[start - 1].pipe(self._streams[end]);
+        }
+    }
+
     this.emit('_mutate');
     this.length = this._streams.length;
     return removed;
