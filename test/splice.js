@@ -56,3 +56,32 @@ test('splice', function (t) {
     stream.write('{"x":6}');
     stream.end();
 });
+
+test('splice to delete only', function (t) {
+    t.plan(1);
+    var a = { x: 1 };
+    var b = { x: 2 };
+    var c = { x: 3 };
+    var expected = [
+        { x: 3 },
+        { x: 4 },
+        { x: 5 }
+    ];
+
+    var stream = pipeline.obj([ add(), add(), add() ]);
+    stream.pipe(concat({ encoding: 'object' }, function (rows) {
+        t.same(rows, expected);
+    }));
+    stream.splice(1, 1);
+    stream.write(a);
+    stream.write(b);
+    stream.write(c);
+    stream.end();
+
+    function add() {
+        return through.obj(function (row, enc, next) {
+            row.x += 1;
+            next(null, row);
+        });
+    }
+});
