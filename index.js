@@ -1,7 +1,7 @@
 var Duplex = require('readable-stream').Duplex;
 var PassThrough = require('readable-stream').PassThrough;
+var Readable = require('readable-stream').Readable;
 var inherits = require('inherits');
-var wrap = require('readable-wrap');
 
 var nextTick = typeof setImmediate !== 'undefined'
     ? setImmediate : process.nextTick
@@ -153,6 +153,10 @@ Pipeline.prototype.splice = function (start, removeLen) {
     var sargs = [start,removeLen].concat(reps);
     var removed = self._streams.splice.apply(self._streams, sargs);
     
+    for (var i = 0; i < reps.length; i++) {
+        reps[i].read(0);
+    }
+    
     this.emit('_mutate');
     this.length = this._streams.length;
     return removed;
@@ -181,7 +185,7 @@ Pipeline.prototype.indexOf = function (stream) {
 
 Pipeline.prototype._wrapStream = function (stream) {
     if (typeof stream.read === 'function') return stream;
-    var w = wrap(stream, this._wrapOptions);
+    var w = new Readable(this._wrapOptions).wrap(stream);
     w._write = function (buf, enc, next) {
         if (stream.write(buf) === false) {
             stream.once('drain', next);
