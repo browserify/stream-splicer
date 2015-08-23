@@ -1,6 +1,5 @@
 var Duplex = require('readable-stream').Duplex;
-var Readable = require('readable-stream').Readable;
-var Pass = require('readable-stream').PassThrough;
+var PassThrough = require('readable-stream').PassThrough;
 var inherits = require('inherits');
 var isArray = require('isarray');
 var indexof = require('indexof');
@@ -76,7 +75,7 @@ Pipeline.prototype._write = function (buf, enc, next) {
 Pipeline.prototype._notEmpty = function () {
     var self = this;
     if (this._streams.length > 0) return;
-    var stream = new Pass(this._options);
+    var stream = new PassThrough(this._options);
     stream.once('end', function () {
         var ix = indexof(self._streams, stream);
         if (ix >= 0 && ix === self._streams.length - 1) {

@@ -15,8 +15,7 @@
     "tape": "^2.12.1",
     "JSONStream": "~0.8.2",
     "concat-stream": "^1.4.6",
-    "split": "~0.3.0",
-    "object-keys": "~0.5.1"
+    "split": "~0.3.0"
   },
   "scripts": {
     "test": "tape test/*.js"
