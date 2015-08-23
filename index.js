@@ -1,8 +1,6 @@
 var Duplex = require('readable-stream').Duplex;
 var PassThrough = require('readable-stream').PassThrough;
 var inherits = require('inherits');
-var isArray = require('isarray');
-var indexof = require('indexof');
 var wrap = require('readable-wrap');
 
 var nextTick = typeof setImmediate !== 'undefined'
@@ -13,7 +11,7 @@ module.exports = Pipeline;
 inherits(Pipeline, Duplex);
 
 module.exports.obj = function (streams, opts) {
-    if (!opts && !isArray(streams)) {
+    if (!opts && !Array.isArray(streams)) {
         opts = streams;
         streams = [];
     }
@@ -25,7 +23,7 @@ module.exports.obj = function (streams, opts) {
 
 function Pipeline (streams, opts) {
     if (!(this instanceof Pipeline)) return new Pipeline(streams, opts);
-    if (!opts && !isArray(streams)) {
+    if (!opts && !Array.isArray(streams)) {
         opts = streams;
         streams = [];
     }
@@ -77,7 +75,7 @@ Pipeline.prototype._notEmpty = function () {
     if (this._streams.length > 0) return;
     var stream = new PassThrough(this._options);
     stream.once('end', function () {
-        var ix = indexof(self._streams, stream);
+        var ix = self._streams.indexOf(stream);
         if (ix >= 0 && ix === self._streams.length - 1) {
             Duplex.prototype.push.call(self, null);
         }
@@ -124,7 +122,7 @@ Pipeline.prototype.splice = function (start, removeLen) {
     
     var reps = [], args = arguments;
     for (var j = 2; j < args.length; j++) (function (stream) {
-        if (isArray(stream)) {
+        if (Array.isArray(stream)) {
             stream = new Pipeline(stream, self._options);
         }
         stream.on('error', function (err) {
@@ -133,7 +131,7 @@ Pipeline.prototype.splice = function (start, removeLen) {
         });
         stream = self._wrapStream(stream);
         stream.once('end', function () {
-            var ix = indexof(self._streams, stream);
+            var ix = self._streams.indexOf(stream);
             if (ix >= 0 && ix === self._streams.length - 1) {
                 Duplex.prototype.push.call(self, null);
             }
@@ -178,7 +176,7 @@ Pipeline.prototype.get = function () {
 };
 
 Pipeline.prototype.indexOf = function (stream) {
-    return indexof(this._streams, stream);
+    return this._streams.indexOf(stream);
 };
 
 Pipeline.prototype._wrapStream = function (stream) {

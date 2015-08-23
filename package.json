@@ -5,11 +5,9 @@
   "main": "index.js",
   "dependencies": {
     "inherits": "^2.0.1",
-    "isarray": "~0.0.1",
     "readable-stream": "^1.1.13-1",
     "readable-wrap": "^1.0.0",
-    "through2": "^1.0.0",
-    "indexof": "0.0.1"
+    "through2": "^1.0.0"
   },
   "devDependencies": {
     "tape": "^2.12.1",
