@@ -17,15 +17,15 @@ parser to operate on the HTTP body.
 ``` js
 var splicer = require('stream-splicer');
 var through = require('through2');
-var JSONStream = require('JSONStream');
-var split = require('split');
+var jsonStream = require('jsonstream2');
+var split = require('split2');
 
 var headerData = {};
 var headers = through.obj(function (buf, enc, next) {
     var line = buf.toString('utf8');
     if (line === '') {
         this.push(headerData);
-        pipeline.splice(1, 1, JSONStream.parse([ 'rows', true ]));
+        pipeline.splice(1, 1, jsonStream.parse([ 'rows', true ]));
     }
     else {
         var m = /^(\S+):(.+)/.exec(line);
@@ -35,7 +35,7 @@ var headers = through.obj(function (buf, enc, next) {
     }
     next();
 });
-var pipeline = splicer([ split(), headers, JSONStream.stringify() ]);
+var pipeline = splicer([ split(), headers, jsonStream.stringify() ]);
 process.stdin.pipe(pipeline).pipe(process.stdout);
 ```
 
