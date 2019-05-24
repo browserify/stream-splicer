@@ -6,7 +6,7 @@ This module is similar to
 [stream-combiner](https://npmjs.org/package/stream-combiner),
 but with a pipeline configuration that can be changed at runtime.
 
-[![build status](https://travis-ci.org/substack/stream-splicer.png?branch=master)](http://travis-ci.org/substack/stream-splicer)
+[![build status](https://travis-ci.org/browserify/stream-splicer.png?branch=master)](http://travis-ci.org/browserify/stream-splicer)
 
 # example
 

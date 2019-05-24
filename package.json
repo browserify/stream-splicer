@@ -19,9 +19,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/substack/stream-splicer.git"
+    "url": "git://github.com/browserify/stream-splicer.git"
   },
-  "homepage": "https://github.com/substack/stream-splicer",
+  "homepage": "https://github.com/browserify/stream-splicer",
   "keywords": [
     "stream",
     "mutable",
